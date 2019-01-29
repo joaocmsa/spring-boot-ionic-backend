@@ -16,27 +16,30 @@ import com.joaocarlos.cursomc.resources.exception.FieldMessage;
 import com.joaocarlos.cursomc.services.validation.utils.BR;
 
 public class ClienteInsertValidator implements ConstraintValidator<ClienteInsert, ClienteNewDTO> {
-	
+
 	@Autowired
-	private ClienteRepository clienteRepository; 
-	
+	private ClienteRepository clienteRepository;
+
 	@Override
 	public void initialize(ClienteInsert ann) {
 	}
 
 	@Override
 	public boolean isValid(ClienteNewDTO objNewDto, ConstraintValidatorContext context) {
-		
+				
 		List<FieldMessage> lista = new ArrayList<>();
 		
+		//validação para cpf invalido
 		if(objNewDto.getTipo().equals(TipoCliente.PESSOAFISICA.getCod()) && !BR.isValidCPF(objNewDto.getCpfOuCnpj()) ) {
 			lista.add(new FieldMessage("cpfOuCnpj", "CPF inválido."));
 		}
 		
+		//validação para cnpj invalido
 		if(objNewDto.getTipo().equals(TipoCliente.PESSOAJURIDICA.getCod()) && !BR.isValidCNPJ(objNewDto.getCpfOuCnpj()) ) {
 			lista.add(new FieldMessage("cpfOuCnpj", "CNPJ inválido."));
 		}
 		
+		//validação para email repetido no cadastro de um novo cliente
 		Cliente cliente = clienteRepository.findByEmail(objNewDto.getEmail());
 		if(cliente != null) {
 			lista.add(new FieldMessage("email", "E-mail já existente."));
